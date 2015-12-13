@@ -13,45 +13,62 @@ items.push(new Item('Sulfuras, Hand of Ragnaros', 0, 80));
 items.push(new Item('Backstage passes to a TAFKAL80ETC concert', 15, 20));
 items.push(new Item('Conjured Mana Cake', 3, 6));
 
-function updateItem(origItem) {
-    var newSellIn = origItem.sell_in - 1;
-    var quality;
-    if (origItem.name === 'Aged Brie') {
-        quality = Math.min(origItem.quality + 1, 50);
-        return {
-            name: origItem.name,
-            sell_in: newSellIn,
-            quality: quality
-        };
-    } else if (origItem.name === 'Sulfuras, Hand of Ragnaros') {
-        return {
-            name: origItem.name,
-            sell_in: origItem.sell_in,
-            quality: 80
-        };
-    } else if (origItem.name === 'Backstage passes to a TAFKAL80ETC concert') {
-        quality = origItem.quality + 1;
-        if (origItem.sell_in < 11) {quality += 1;}
-        if (origItem.sell_in < 6) {quality += 1;}
-        if (origItem.sell_in < 1) {quality = 0;}
-        if (quality > 50) {quality = 50;}
+var GildedRose = (function() {
+    var types = [];
+    var normal;
+    return {
+        setBaseline: function(type) {normal = type;},
+        register: function (type) {types.push(type);},
+        fetch: function (item) {
+            return util.find(function (type) {return type.match(item)}, types) || normal;
+        }
+    };
+}());
 
-        return {
-            name: origItem.name,
-            sell_in: newSellIn,
-            quality: quality
-        };
-    } else {
-        quality = origItem.quality - 1;
-        if (origItem.sell_in < 1) {quality -= 1;}
-        if (quality < 0) {quality = 0;}
-
-        return {
-            name: origItem.name,
-            sell_in: newSellIn,
-            quality: quality
-        };
+GildedRose.setBaseline({ // Normal
+    match: function() {return true;},
+    sell_in: function(item) {return item.sell_in - 1;},
+    quality: function(item) {
+        var qual = item.quality - 1;
+        if (item.sell_in < 1) {qual -= 1;}
+        if (qual < 0) {qual = 0;}
+        return qual;
     }
+});
+
+GildedRose.register({ // Brie
+    match: function(item) {return item.name === 'Aged Brie';},
+    sell_in: function(item) {return item.sell_in - 1;},
+    quality: function(item) {return  Math.min(item.quality + 1, 50);}
+});
+
+GildedRose.register({ // Sulfuras
+    match: function(item) {return item.name === 'Sulfuras, Hand of Ragnaros';},
+    sell_in: function(item) {return item.sell_in;},
+    quality: function(item) {return  80;}
+});
+
+GildedRose.register({ // Backstage
+    match: function(item) {return item.name === 'Backstage passes to a TAFKAL80ETC concert';},
+    sell_in: function(item) {return item.sell_in;},
+    quality: function(item) {
+        var qual = item.quality + 1;
+        if (item.sell_in < 11) {qual += 1;}
+        if (item.sell_in < 6) {qual += 1;}
+        if (item.sell_in < 1) {qual = 0;}
+        if (qual > 50) {qual = 50;}
+        return qual;        
+    }
+});
+
+
+function updateItem(origItem) {
+    var type = GildedRose.fetch(origItem);
+    return {
+        name: origItem.name,
+        sell_in: type.sell_in(origItem),
+        quality: type.quality(origItem)
+    };
 }
 
 function update_quality() {
