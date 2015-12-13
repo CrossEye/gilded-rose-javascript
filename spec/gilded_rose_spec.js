@@ -104,7 +104,7 @@ describe("updateItem for Gilded Rose", function () {
         });
     });
 
-    xdescribe('conjured', function() {
+    describe('conjured', function() {
         it('reduces quality by 2', function() {
             var updated = updateItem(new Item('Conjured Mana Cake', 3, 6));
             expect(updated.quality).toBe(4);

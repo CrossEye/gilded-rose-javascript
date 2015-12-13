@@ -59,6 +59,16 @@ GildedRose.register({ // Backstage
     }
 });
 
+GildedRose.register({ // Conjured
+    match: util.nameEq('Conjured Mana Cake'),
+    quality: function(item) {
+        var qual = item.quality - 2;
+        if (item.sell_in < 1) {qual -= 2;}
+        if (qual < 0) {qual = 0;}
+        return qual;
+    }
+});
+
 
 function updateItem(origItem) {
     var type = GildedRose.fetch(origItem);
