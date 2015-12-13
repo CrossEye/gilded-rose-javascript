@@ -15,12 +15,12 @@ items.push(new Item('Conjured Mana Cake', 3, 6));
 
 var GildedRose = (function() {
     var types = [];
-    var normal;
+    var normal = {};
     return {
         setBaseline: function(type) {normal = type;},
         register: function (type) {types.push(type);},
         fetch: function (item) {
-            return util.find(function (type) {return type.match(item)}, types) || normal;
+            return util.merge(normal, util.find(function (type) {return type.match(item)}, types) || {});
         }
     };
 }());
@@ -37,20 +37,18 @@ GildedRose.setBaseline({ // Normal
 });
 
 GildedRose.register({ // Brie
-    match: function(item) {return item.name === 'Aged Brie';},
-    sell_in: function(item) {return item.sell_in - 1;},
+    match: util.nameEq('Aged Brie'),
     quality: function(item) {return  Math.min(item.quality + 1, 50);}
 });
 
 GildedRose.register({ // Sulfuras
-    match: function(item) {return item.name === 'Sulfuras, Hand of Ragnaros';},
+    match: util.nameEq('Sulfuras, Hand of Ragnaros'),
     sell_in: function(item) {return item.sell_in;},
-    quality: function(item) {return  80;}
+    quality: function() {return  80;}
 });
 
 GildedRose.register({ // Backstage
-    match: function(item) {return item.name === 'Backstage passes to a TAFKAL80ETC concert';},
-    sell_in: function(item) {return item.sell_in;},
+    match: util.nameEq('Backstage passes to a TAFKAL80ETC concert'),
     quality: function(item) {
         var qual = item.quality + 1;
         if (item.sell_in < 11) {qual += 1;}
