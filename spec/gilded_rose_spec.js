@@ -86,12 +86,12 @@ describe("updateItem for Gilded Rose", function () {
             expect(updated.quality).toBe(50);
         });
 
-        it('does not increase quality over 50, when there are more than 6 - 10 days remaining', function() {
+        it('does not increase quality over 50, when there are 6 - 10 days remaining', function() {
             var updated = updateItem(new Item('Backstage passes to a TAFKAL80ETC concert', 7, 50));
             expect(updated.quality).toBe(50);
         });
 
-        it('does not increase quality over 50, when there are more than 1 - 5 days remaining', function() {
+        it('does not increase quality over 50, when there are 1 - 5 days remaining', function() {
             var updated = updateItem(new Item('Backstage passes to a TAFKAL80ETC concert', 3, 50));
             expect(updated.quality).toBe(50);
         });
