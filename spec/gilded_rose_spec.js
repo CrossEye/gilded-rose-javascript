@@ -126,3 +126,25 @@ describe("updateItem for Gilded Rose", function () {
         });
     });
 });
+
+describe("update_quality for Gilded Rose", function() {
+    var orig = items;
+    beforeEach(function() {
+        items = orig;
+    });
+
+    it('clones and replaces items', function() {
+        update_quality();
+        expect(items).not.toBe(orig);
+        expect(items.length).toBe(orig.length);
+    });
+
+    it('Does the appropriate update on the individual elements', function() {
+        var updatedFirst = updateItem(items[0]);
+        update_quality();
+        expect(items[0].name).toBe(updatedFirst.name);
+        expect(items[0].sell_in).toBe(updatedFirst.sell_in);
+        expect(items[0].quality).toBe(updatedFirst.quality);
+    });
+
+});
